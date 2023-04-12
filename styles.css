@@ -135,3 +135,7 @@ body {
   .add-form-button:hover {
     opacity: 0.9;
   }
+
+  .empty-place{
+	background: rgb(92, 0, 0);
+  }
