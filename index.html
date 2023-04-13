@@ -8,7 +8,7 @@
 
 <body>
 	<div class="container">
-		<ul class="comments">
+		<ul class="comments" id="commentsList">
 			<li class="comment">
 				<div class="comment-header">
 					<div>Глеб Фокин</div>
@@ -45,18 +45,126 @@
 			</li>
 		</ul>
 		<div class="add-form">
-			<input type="text" class="add-form-name" placeholder="Введите ваше имя" />
-			<textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"></textarea>
+			<input type="text" class="add-form-name" placeholder="Введите ваше имя" id="nameInput" />
+			<textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
+				id="textInput"></textarea>
 			<div class="add-form-row">
-				<button class="add-form-button">Написать</button>
+				<button class="add-form-button" id="buttonAddComments">Написать</button>
 			</div>
 		</div>
+		<button class="add-form-button" id="buttonDeleteLastComment">Удалить последний комментарий</button>
 	</div>
 </body>
 
 <script>
-	// Код писать здесь
-	console.log("It works!");
+	const commentsList = document.getElementById("commentsList");
+	const buttonAddComments = document.getElementById("buttonAddComments");
+	const buttonDeleteLastComment = document.getElementById("buttonDeleteLastComment");
+	const nameInput = document.getElementById("nameInput");
+	const textInput = document.getElementById("textInput");
+
+	// =====================================================================================================================
+	// Код, не позволяющий добавить комментарий и окрашивающий кнопку в серый, пока содержимое
+	// полей ввода пустое
+
+	// buttonAddComments.disabled = "true";
+
+	// const validateForm = () => {
+	// 	if (nameInput.value.trim() === "") {
+	// 		buttonAddComments.disabled = true;
+	// 		return;
+	// 	}
+	// 	if (textInput.value.trim() === "") {
+	// 		buttonAddComments.disabled = true;
+	// 		return;
+	// 	}
+	// 	buttonAddComments.disabled = false;
+	// }
+
+	// nameInput.addEventListener("input", validateForm);
+	// textInput.addEventListener("input", validateForm);
+	// =====================================================================================================================
+
+
+	const addNewComment = () => {
+		const oldCommentsList = commentsList.innerHTML;
+
+		// =====================================================================================================================
+		// Код для фиксации текущих даты и времени к каждому новому комментарию
+		let yourDate = new Date();
+		let yourDay = yourDate.getDate();
+		let yourMonth = yourDate.getMonth() + 1;
+		let yourYear = yourDate.getFullYear();
+		let yourHours = yourDate.getHours();
+		let yourMinutes = yourDate.getMinutes();
+
+		if (yourDay < 10) yourDay = "0" + yourDay;
+		if (yourMonth < 10) yourMonth = "0" + yourMonth;
+		if (yourHours < 10) yourHours = "0" + yourHours;
+		if (yourMinutes < 10) yourMinutes = "0" + yourMinutes;
+		// =====================================================================================================================
+
+
+		// =====================================================================================================================
+		// Код, который не позволяет добавить комментарий на страницу в случае, если одно из полей не заполнено,
+		// при этом незаполненное поле изменяет свой стиль и окрашивается в красный цвет
+
+		if (nameInput.value === "") {
+			nameInput.classList.add("empty-place");
+			return;
+		} else {
+			nameInput.classList.remove("empty-place");
+		}
+
+		if (textInput.value === "") {
+			textInput.classList.add("empty-place");
+			return;
+		} else {
+			textInput.classList.remove("empty-place");
+		}
+		// =====================================================================================================================
+
+
+		commentsList.innerHTML = oldCommentsList + `<li class="comment">
+				<div class="comment-header">
+					<div>${nameInput.value}</div>
+					<div>${yourDay}.${yourMonth}.${yourYear} ${yourHours}:${yourMinutes}</div>
+				</div>
+				<div class="comment-body">
+					<div class="comment-text">
+						${textInput.value}
+					</div>
+				</div>
+				<div class="comment-footer">
+					<div class="likes">
+						<span class="likes-counter">0</span>
+						<button class="like-button"></button>
+					</div>
+				</div>
+			</li>`
+		nameInput.value = "";
+		textInput.value = "";
+	}
+
+	buttonAddComments.addEventListener("click", addNewComment);
+
+	// =====================================================================================================================
+	// Добавление комментария при нажатии на Enter
+	document.addEventListener("keyup", e => {
+		if (e.key === "Enter") {
+			addNewComment();
+		}
+	});
+	// =====================================================================================================================
+
+	// =====================================================================================================================
+	// Удаление крайнего комментария
+
+	buttonDeleteLastComment.addEventListener("click", () => {
+		commentsList.lastChild.remove();
+	});
+
+// =====================================================================================================================
 </script>
 
 </html>
