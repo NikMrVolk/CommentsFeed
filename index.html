@@ -8,42 +8,7 @@
 
 <body>
 	<div class="container">
-		<ul class="comments" id="commentsList">
-			<li class="comment">
-				<div class="comment-header">
-					<div>Глеб Фокин</div>
-					<div>12.02.22 12:18</div>
-				</div>
-				<div class="comment-body">
-					<div class="comment-text">
-						Это будет первый комментарий на этой странице
-					</div>
-				</div>
-				<div class="comment-footer">
-					<div class="likes">
-						<span class="likes-counter">3</span>
-						<button class="like-button"></button>
-					</div>
-				</div>
-			</li>
-			<li class="comment">
-				<div class="comment-header">
-					<div>Варвара Н.</div>
-					<div>13.02.22 19:22</div>
-				</div>
-				<div class="comment-body">
-					<div class="comment-text">
-						Мне нравится как оформлена эта страница! ❤
-					</div>
-				</div>
-				<div class="comment-footer">
-					<div class="likes">
-						<span class="likes-counter">75</span>
-						<button class="like-button -active-like"></button>
-					</div>
-				</div>
-			</li>
-		</ul>
+		<ul class="comments" id="commentsList"></ul>
 		<div class="add-form">
 			<input type="text" class="add-form-name" placeholder="Введите ваше имя" id="nameInput" />
 			<textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
@@ -62,6 +27,89 @@
 	const buttonDeleteLastComment = document.getElementById("buttonDeleteLastComment");
 	const nameInput = document.getElementById("nameInput");
 	const textInput = document.getElementById("textInput");
+
+	const comments = [
+		{
+			userName: "Глеб Фокин",
+			commentDate: "12/02/2022, 12:18:00",
+			commentText: "Это будет первый комментарий на этой странице",
+			likesCounter: 3,
+			likeInfo: false,
+			isEdit: false,
+		},
+		{
+			userName: "Варвара Н.",
+			commentDate: "13/02/2022, 19:22:00",
+			commentText: "Мне нравится как оформлена эта страница! ❤",
+			likesCounter: 75,
+			likeInfo: true,
+			isEdit: false,
+		},
+	];
+
+	const renderComments = () => {
+		const commentsHTML = comments.map((comment, index) => {
+			return `<li class="comment">
+		<div class="comment-header">
+			<div>${comment.userName}</div>
+			<div>${comment.commentDate}</div>
+		</div>
+		<div class="comment-body">
+			<div class="comment-text">
+				${comment.commentText}
+			</div>
+		</div>
+		<div class="comment-footer">
+			<div class=edit>
+				<button class="add-form-button edit-button" data-index="${index}">${comment.isEdit ? "Сохранить" : "Редактировать"}</button>
+			</div>
+			<div class="likes">
+				<span class="likes-counter">${comment.likesCounter}</span>
+				<button class="like-button ${comment.likeInfo ? "-active-like" : ""}" data-index="${index}" data-likes="${comment.likesCounter}"></button>
+			</div>
+		</div>
+	</li>`
+		}).join("");
+		commentsList.innerHTML = commentsHTML;
+		addCommentLike();
+		editComments();
+	}
+
+	const addCommentLike = () => {
+		const commentsLikes = document.querySelectorAll(".like-button");
+		for (const commentsLike of commentsLikes) {
+			commentsLike.addEventListener("click", () => {
+				const index = commentsLike.dataset.index;
+				if (comments[index].likeInfo === true) {
+					comments[index].likesCounter -= 1;
+					comments[index].likeInfo = false;
+				} else {
+					comments[index].likesCounter += 1;
+					comments[index].likeInfo = true;
+				}
+				renderComments();
+			});
+		}
+	}
+
+	const editComments = () => {
+		const editCommentsButtons = document.querySelectorAll(".edit-button");
+		for (const editCommentsButton of editCommentsButtons) {
+			editCommentsButton.addEventListener("click", () => {
+				const index = editCommentsButton.dataset.index;
+				if (comments[index].isEdit === true) {
+					const textInputEditComment = document.getElementById("textInputEditComment");
+					comments[index].commentText = textInputEditComment.value;
+					comments[index].isEdit = false;
+				} else {
+					comments[index].commentText = `<textarea type="textarea" class="form-edit-comment" rows="4"
+				id="textInputEditComment">${comments[index].commentText}</textarea>`
+					comments[index].isEdit = true;
+				}
+				renderComments();
+			});
+		}
+	}
 
 	// =====================================================================================================================
 	// Код, не позволяющий добавить комментарий и окрашивающий кнопку в серый, пока содержимое
@@ -85,37 +133,24 @@
 	// textInput.addEventListener("input", validateForm);
 	// =====================================================================================================================
 
+	renderComments();
 
 	const addNewComment = () => {
-		const oldCommentsList = commentsList.innerHTML;
-
 		// =====================================================================================================================
 		// Код для фиксации текущих даты и времени к каждому новому комментарию
-		let yourDate = new Date();
-		let yourDay = yourDate.getDate();
-		let yourMonth = yourDate.getMonth() + 1;
-		let yourYear = yourDate.getFullYear();
-		let yourHours = yourDate.getHours();
-		let yourMinutes = yourDate.getMinutes();
-
-		if (yourDay < 10) yourDay = "0" + yourDay;
-		if (yourMonth < 10) yourMonth = "0" + yourMonth;
-		if (yourHours < 10) yourHours = "0" + yourHours;
-		if (yourMinutes < 10) yourMinutes = "0" + yourMinutes;
+		let myFullDate = new Date();
+		let myDate = myFullDate.toLocaleString();
 		// =====================================================================================================================
-
 
 		// =====================================================================================================================
 		// Код, который не позволяет добавить комментарий на страницу в случае, если одно из полей не заполнено,
 		// при этом незаполненное поле изменяет свой стиль и окрашивается в красный цвет
-
 		if (nameInput.value === "") {
 			nameInput.classList.add("empty-place");
 			return;
 		} else {
 			nameInput.classList.remove("empty-place");
 		}
-
 		if (textInput.value === "") {
 			textInput.classList.add("empty-place");
 			return;
@@ -124,46 +159,39 @@
 		}
 		// =====================================================================================================================
 
+		comments.push(
+			{
+				userName: nameInput.value,
+				commentDate: myDate,
+				commentText: textInput.value,
+				likesCounter: 0,
+				likeInfo: false,
+				isEdit: false,
+			}
+		)
 
-		commentsList.innerHTML = oldCommentsList + `<li class="comment">
-				<div class="comment-header">
-					<div>${nameInput.value}</div>
-					<div>${yourDay}.${yourMonth}.${yourYear} ${yourHours}:${yourMinutes}</div>
-				</div>
-				<div class="comment-body">
-					<div class="comment-text">
-						${textInput.value}
-					</div>
-				</div>
-				<div class="comment-footer">
-					<div class="likes">
-						<span class="likes-counter">0</span>
-						<button class="like-button"></button>
-					</div>
-				</div>
-			</li>`
 		nameInput.value = "";
 		textInput.value = "";
+
+		renderComments();
 	}
 
 	buttonAddComments.addEventListener("click", addNewComment);
 
 	// =====================================================================================================================
 	// Добавление комментария при нажатии на Enter
-	document.addEventListener("keyup", e => {
-		if (e.key === "Enter") {
-			addNewComment();
-		}
-	});
+	// document.addEventListener("keyup", e => {
+	// 	if (e.key === "Enter") {
+	// 		addNewComment();
+	// 	}
+	// });
 	// =====================================================================================================================
 
 	// =====================================================================================================================
 	// Удаление крайнего комментария
-
 	buttonDeleteLastComment.addEventListener("click", () => {
 		commentsList.lastChild.remove();
 	});
-
 // =====================================================================================================================
 </script>
 
