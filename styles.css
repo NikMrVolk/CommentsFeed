@@ -66,6 +66,14 @@ body {
 	 white-space: pre-line;
   }
 
+  .quote{
+	color: black;
+	background: #ffffff;
+	padding: 10px;
+	font-size: 18px;
+	margin-bottom: 30px;
+  }
+
   .form-edit-comment {
 	width:400px;
 	padding:15px;

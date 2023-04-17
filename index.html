@@ -58,7 +58,7 @@
 		</div>
 		<div class="comment-body">
 			<div class="comment-text">
-				${comment.commentText}
+				${comment.commentText.replaceAll("QUOTE_BEGIN", "<div class='quote'>").replaceAll("QUOTE_END", "</div>")}
 			</div>
 		</div>
 		<div class="comment-footer">
@@ -122,9 +122,8 @@
 			commentBody.addEventListener("click", () => {
 				const index = commentBody.dataset.index;
 				if (comments[index].isAnswer === false) {
-					textInput.value = `${comments[index].commentText} 
-
-${comments[index].userName},`
+					textInput.value = `QUOTE_BEGIN ${comments[index].userName}:
+${comments[index].commentText} QUOTE_END`
 				}
 				renderComments();
 			});
