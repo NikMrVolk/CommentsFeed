@@ -62,6 +62,16 @@ body {
 
   .comment-text {
     font-size: 32px;
+	 word-break: break-word;
+	 white-space: pre-line;
+  }
+
+  .quote{
+	color: black;
+	background: #ffffff;
+	padding: 10px;
+	font-size: 18px;
+	margin-bottom: 30px;
   }
 
   .form-edit-comment {
@@ -115,6 +125,7 @@ body {
     font-family: Helvetica;
     border-radius: 8px;
     border: none;
+	 white-space: pre;
   }
 
   .add-form-name {

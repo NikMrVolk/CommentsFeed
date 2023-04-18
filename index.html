@@ -26,7 +26,7 @@
 	const buttonAddComments = document.getElementById("buttonAddComments");
 	const buttonDeleteLastComment = document.getElementById("buttonDeleteLastComment");
 	const nameInput = document.getElementById("nameInput");
-	const textInput = document.getElementById("textInput");
+	let textInput = document.getElementById("textInput");
 
 	const comments = [
 		{
@@ -36,6 +36,7 @@
 			likesCounter: 3,
 			likeInfo: false,
 			isEdit: false,
+			isAnswer: false,
 		},
 		{
 			userName: "Варвара Н.",
@@ -44,19 +45,20 @@
 			likesCounter: 75,
 			likeInfo: true,
 			isEdit: false,
+			isAnswer: false,
 		},
 	];
 
 	const renderComments = () => {
 		const commentsHTML = comments.map((comment, index) => {
-			return `<li class="comment">
+			return `<li class="comment" data-index="${index}">
 		<div class="comment-header">
-			<div>${comment.userName}</div>
+			<div>${comment.userName.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")}</div>
 			<div>${comment.commentDate}</div>
 		</div>
 		<div class="comment-body">
 			<div class="comment-text">
-				${comment.commentText}
+				${comment.commentText.replaceAll("QUOTE_BEGIN", "<div class='quote'>").replaceAll("QUOTE_END", "</div>")}
 			</div>
 		</div>
 		<div class="comment-footer">
@@ -72,13 +74,15 @@
 		}).join("");
 		commentsList.innerHTML = commentsHTML;
 		addCommentLike();
-		editComments();
+		// editComments();
+		answerComment();
 	}
 
 	const addCommentLike = () => {
 		const commentsLikes = document.querySelectorAll(".like-button");
 		for (const commentsLike of commentsLikes) {
-			commentsLike.addEventListener("click", () => {
+			commentsLike.addEventListener("click", (event) => {
+				event.stopPropagation();
 				const index = commentsLike.dataset.index;
 				if (comments[index].likeInfo === true) {
 					comments[index].likesCounter -= 1;
@@ -92,19 +96,34 @@
 		}
 	}
 
-	const editComments = () => {
-		const editCommentsButtons = document.querySelectorAll(".edit-button");
-		for (const editCommentsButton of editCommentsButtons) {
-			editCommentsButton.addEventListener("click", () => {
-				const index = editCommentsButton.dataset.index;
-				if (comments[index].isEdit === true) {
-					const textInputEditComment = document.getElementById("textInputEditComment");
-					comments[index].commentText = textInputEditComment.value;
-					comments[index].isEdit = false;
-				} else {
-					comments[index].commentText = `<textarea type="textarea" class="form-edit-comment" rows="4"
-				id="textInputEditComment">${comments[index].commentText}</textarea>`
-					comments[index].isEdit = true;
+	// const editComments = () => {
+	// 	const editCommentsButtons = document.querySelectorAll(".edit-button");
+	// 	for (const editCommentsButton of editCommentsButtons) {
+	// 		editCommentsButton.addEventListener("click", (event) => {
+	// 			event.stopPropagation();
+	// 			const index = editCommentsButton.dataset.index;
+	// 			if (comments[index].isEdit === true) {
+	// 				const textInputEditComment = document.getElementById("textInputEditComment");
+	// 				comments[index].commentText = textInputEditComment.value;
+	// 				comments[index].isEdit = false;
+	// 			} else {
+	// 				comments[index].commentText = `<textarea type="textarea" class="form-edit-comment" rows="4"
+	// 			id="textInputEditComment">${comments[index].commentText}</textarea>`
+	// 				comments[index].isEdit = true;
+	// 			}
+	// 			renderComments();
+	// 		});
+	// 	}
+	// }
+
+	const answerComment = () => {
+		const commentsBody = document.querySelectorAll(".comment");
+		for (const commentBody of commentsBody) {
+			commentBody.addEventListener("click", () => {
+				const index = commentBody.dataset.index;
+				if (comments[index].isAnswer === false) {
+					textInput.value = `QUOTE_BEGIN ${comments[index].userName}:
+${comments[index].commentText} QUOTE_END`
 				}
 				renderComments();
 			});
@@ -163,10 +182,11 @@
 			{
 				userName: nameInput.value,
 				commentDate: myDate,
-				commentText: textInput.value,
+				commentText: textInput.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
 				likesCounter: 0,
 				likeInfo: false,
 				isEdit: false,
+				isAnswer: false,
 			}
 		)
 
