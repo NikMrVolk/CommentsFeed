@@ -27,27 +27,7 @@
 	const buttonDeleteLastComment = document.getElementById("buttonDeleteLastComment");
 	const nameInput = document.getElementById("nameInput");
 	let textInput = document.getElementById("textInput");
-
-	const comments = [
-		{
-			userName: "Глеб Фокин",
-			commentDate: "12/02/2022, 12:18:00",
-			commentText: "Это будет первый комментарий на этой странице",
-			likesCounter: 3,
-			likeInfo: false,
-			isEdit: false,
-			isAnswer: false,
-		},
-		{
-			userName: "Варвара Н.",
-			commentDate: "13/02/2022, 19:22:00",
-			commentText: "Мне нравится как оформлена эта страница! ❤",
-			likesCounter: 75,
-			likeInfo: true,
-			isEdit: false,
-			isAnswer: false,
-		},
-	];
+	let comments = [];
 
 	const renderComments = () => {
 		const commentsHTML = comments.map((comment, index) => {
@@ -62,9 +42,6 @@
 			</div>
 		</div>
 		<div class="comment-footer">
-			<div class=edit>
-				<button class="add-form-button edit-button" data-index="${index}">${comment.isEdit ? "Сохранить" : "Редактировать"}</button>
-			</div>
 			<div class="likes">
 				<span class="likes-counter">${comment.likesCounter}</span>
 				<button class="like-button ${comment.likeInfo ? "-active-like" : ""}" data-index="${index}" data-likes="${comment.likesCounter}"></button>
@@ -74,9 +51,27 @@
 		}).join("");
 		commentsList.innerHTML = commentsHTML;
 		addCommentLike();
-		// editComments();
 		answerComment();
 	}
+
+	fetch("https://webdev-hw-api.vercel.app/api/v1/nikita-zavadskiy/comments", {
+		method: "GET",
+	}).then((response) => {
+		const jsonData = response.json()
+			.then((responseData) => {
+				const appComments = responseData.comments.map((comment) => {
+					return {
+						userName: comment.author.name,
+						commentDate: new Date(comment.date).toLocaleString(),
+						commentText: comment.text,
+						likesCounter: comment.likes,
+						likeInfo: false,
+					};
+				});
+				comments = appComments;
+				renderComments();
+			});
+	});
 
 	const addCommentLike = () => {
 		const commentsLikes = document.querySelectorAll(".like-button");
@@ -178,17 +173,33 @@ ${comments[index].commentText} QUOTE_END`
 		}
 		// =====================================================================================================================
 
-		comments.push(
-			{
-				userName: nameInput.value,
-				commentDate: myDate,
-				commentText: textInput.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
-				likesCounter: 0,
-				likeInfo: false,
-				isEdit: false,
-				isAnswer: false,
-			}
-		)
+		fetch("https://webdev-hw-api.vercel.app/api/v1/nikita-zavadskiy/comments", {
+			method: "POST",
+			body: JSON.stringify({
+				text: textInput.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
+				name: nameInput.value,
+			})
+		}).then(() => {
+			fetch("https://webdev-hw-api.vercel.app/api/v1/nikita-zavadskiy/comments", {
+				method: "GET",
+			}).then((response) => {
+				const jsonData = response.json()
+					.then((responseData) => {
+						const appComments = responseData.comments.map((comment) => {
+							return {
+								userName: comment.author.name,
+								commentDate: new Date(comment.date).toLocaleString(),
+								commentText: comment.text,
+								likesCounter: comment.likes,
+								likeInfo: false,
+							};
+						});
+						comments = appComments;
+						renderComments();
+					});
+			});
+		});
+
 
 		nameInput.value = "";
 		textInput.value = "";
