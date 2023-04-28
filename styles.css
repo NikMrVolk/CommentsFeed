@@ -38,6 +38,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 24px;
+	 padding-bottom: 20px;
+  }
+
+  .loader-add-comment{
+    display: none;
   }
 
   .comment {
@@ -161,3 +166,22 @@ body {
   .empty-place{
 	background: rgb(92, 0, 0);
   }
+
+  @keyframes rotating {
+	from {
+	  transform: rotate(0deg);
+	}
+	25% {
+	  transform: rotate(30deg);;
+	}
+	75% {
+	  transform: rotate(-30deg);;
+	}
+	to {
+	  transform: rotate(0deg);
+	}
+ }
+
+ .-loading-like {
+	animation: rotating 2s linear infinite;
+ }
