@@ -51,25 +51,21 @@
 					};
 				});
 				comments = appComments;
-				//=================================================================================================
-				// Для выполнения требования первого задания (появление loadera во время загрузки страницы)
-				// у меня появилось два варианта решения, нааписаных ниже, мне интересно, какой из них может
-				// оказаться практичнее с точки зрения Вашего опыта?
-				commentsLoadingText.style.display = "none"
-				// commentsLoadingText.textContent = "";
-				//=================================================================================================
+
+				commentsLoadingText.classList.add("hidden")
+
 				renderComments();
 			});
 	}
 
 	const fetchAndAddComment = () => {
 		const addStyleAddFormAndSaveInputValue = () => {
-			loaderAddComment.style.display = "none";
-			addForm.style.display = "block";
-			nameInput.style.width = "344px";
-			nameInput.style.padding = "11px 22px";
-			textInput.style.width = "500px";
-			textInput.style.padding = "22px";
+			loaderAddComment.classList.remove("block")
+			loaderAddComment.classList.add("hidden");
+			addForm.classList.remove("hidden");
+			addForm.classList.add("block");
+			nameInput.classList.add("name-input-return");
+			textInput.classList.add("text-input-return");
 
 			nameInput.value = valueNameInput;
 			textInput.value = valueTextInput;
@@ -93,7 +89,6 @@
 				if (response.status === 500) {
 					throw new Error("something broke");
 				}
-				console.log(response.status);
 				return fetchAndLoadingComments();
 			})
 			.then((response) => {
@@ -243,8 +238,8 @@
 
 	const addNewComment = () => {
 
-		loaderAddComment.style.display = "block";
-		addForm.style.display = "none"
+		loaderAddComment.classList.add("block");
+		addForm.classList.add("hidden");
 
 		// =====================================================================================================================
 		// Код для фиксации текущих даты и времени к каждому новому комментарию
