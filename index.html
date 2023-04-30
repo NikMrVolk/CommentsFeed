@@ -98,19 +98,23 @@
 				return response;
 			})
 			.catch((error) => {
-				if (error.message === "not enough symbols") {
-					alert("Имя и комментарий не должны быть короче 3-х символов");
-					addStyleAddFormAndSaveInputValue();
-				}
-				if (error.message === "something broke") {
-					// alert скрыт для того, чтобы пользователю не пришлось в случае ошибки несколькуо раз нажимать на значок отмены
-					// alert("Сервер сломался, попробуй позже");
-					addStyleAddFormAndSaveInputValue();
-					fetchAndAddComment();
-				}
-				if (error.message === "Failed to fetch") {
-					alert("Проблема с интернетом, попробуйте позже");
-					addStyleAddFormAndSaveInputValue();
+				switch (error.message) {
+					case "not enough symbols":
+						alert("Имя и комментарий не должны быть короче 3-х символов");
+						addStyleAddFormAndSaveInputValue();
+						break;
+					case "something broke":
+						addStyleAddFormAndSaveInputValue();
+						fetchAndAddComment();
+						break;
+					case "Failed to fetch":
+						alert("Проблема с интернетом, попробуйте позже");
+						addStyleAddFormAndSaveInputValue();
+						break;
+					default:
+						alert("Что-то пошло не так, попробуйте позже");
+						addStyleAddFormAndSaveInputValue();
+						break;
 				}
 			})
 	}
@@ -243,8 +247,7 @@
 
 		// =====================================================================================================================
 		// Код для фиксации текущих даты и времени к каждому новому комментарию
-		let myFullDate = new Date();
-		let myDate = myFullDate.toLocaleString();
+		let myDate = new Date().toLocaleString();
 		// =====================================================================================================================
 
 		// =====================================================================================================================
