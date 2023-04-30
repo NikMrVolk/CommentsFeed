@@ -185,3 +185,21 @@ body {
  .-loading-like {
 	animation: rotating 2s linear infinite;
  }
+
+ .block {
+	display: block;
+ }
+
+ .hidden {
+	display: none;
+ }
+
+ .name-input-return {
+	width: 344px;
+	padding: 11px 22px;
+ }
+
+ .text-input-return {
+	width: 500px;
+	padding: 22px;
+ }

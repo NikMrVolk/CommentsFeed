@@ -51,36 +51,72 @@
 					};
 				});
 				comments = appComments;
-				//=================================================================================================
-				// Для выполнения требования первого задания (появление loadera во время загрузки страницы)
-				// у меня появилось два варианта решения, нааписаных ниже, мне интересно, какой из них может
-				// оказаться практичнее с точки зрения Вашего опыта?
-				commentsLoadingText.style.display = "none"
-				// commentsLoadingText.textContent = "";
-				//=================================================================================================
+
+				commentsLoadingText.classList.add("hidden")
+
 				renderComments();
 			});
 	}
 
 	const fetchAndAddComment = () => {
+		const addStyleAddFormAndSaveInputValue = () => {
+			loaderAddComment.classList.remove("block")
+			loaderAddComment.classList.add("hidden");
+			addForm.classList.remove("hidden");
+			addForm.classList.add("block");
+			nameInput.classList.add("name-input-return");
+			textInput.classList.add("text-input-return");
+
+			nameInput.value = valueNameInput;
+			textInput.value = valueTextInput;
+		}
+
+		const valueNameInput = nameInput.value;
+		const valueTextInput = textInput.value;
+
 		return fetch("https://webdev-hw-api.vercel.app/api/v1/nikita-zavadskiy/comments", {
 			method: "POST",
 			body: JSON.stringify({
 				text: textInput.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
 				name: nameInput.value,
+				forceError: true,
 			})
 		})
 			.then((response) => {
+				if (response.status === 400) {
+					throw new Error("not enough symbols");
+				}
+				if (response.status === 500) {
+					throw new Error("something broke");
+				}
 				return fetchAndLoadingComments();
 			})
 			.then((response) => {
-				loaderAddComment.style.display = "none";
-				addForm.style.display = "block";
-				nameInput.style.width = "344px";
-				nameInput.style.padding = "11px 22px";
-				textInput.style.width = "500px";
-				textInput.style.padding = "22px";
-			});
+				addStyleAddFormAndSaveInputValue();
+				nameInput.value = "";
+				textInput.value = "";
+				return response;
+			})
+			.catch((error) => {
+				switch (error.message) {
+					case "not enough symbols":
+						alert("Имя и комментарий не должны быть короче 3-х символов");
+						addStyleAddFormAndSaveInputValue();
+						break;
+					case "something broke":
+						addStyleAddFormAndSaveInputValue();
+						fetchAndAddComment();
+						break;
+					case "Failed to fetch":
+						alert("Проблема с интернетом, попробуйте позже");
+						addStyleAddFormAndSaveInputValue();
+						break;
+					default:
+						alert("Что-то пошло не так, попробуйте позже");
+						addStyleAddFormAndSaveInputValue();
+						break;
+				}
+			})
 	}
 
 
@@ -206,13 +242,12 @@
 
 	const addNewComment = () => {
 
-		loaderAddComment.style.display = "block";
-		addForm.style.display = "none"
+		loaderAddComment.classList.add("block");
+		addForm.classList.add("hidden");
 
 		// =====================================================================================================================
 		// Код для фиксации текущих даты и времени к каждому новому комментарию
-		let myFullDate = new Date();
-		let myDate = myFullDate.toLocaleString();
+		let myDate = new Date().toLocaleString();
 		// =====================================================================================================================
 
 		// =====================================================================================================================
