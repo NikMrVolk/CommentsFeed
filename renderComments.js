@@ -1,4 +1,5 @@
 import { comments } from "./api.js";
+import { delay } from "./utils.js";
 
 const renderComments = (element, getListComments) => {
 	const commentsHTML = comments
@@ -26,14 +27,6 @@ const getListComments = (comment, index) => {
 		</div>
 	</div>
 </li>`
-}
-
-function delay(interval = 300) {
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			resolve();
-		}, interval);
-	});
 }
 
 const addCommentLike = () => {
