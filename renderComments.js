@@ -1,12 +1,27 @@
+import { container } from "./main.js";
 import { comments } from "./api.js";
 import { delay } from "./utils.js";
+import { addNewComment, deleteLastComment } from "./addAndDeleteComments.js";
 
-const renderComments = (element, getListComments) => {
+
+
+const renderApp = (element, getListComments, getApp) => {
+
 	const commentsHTML = comments
 		.map((comment, index) => getListComments(comment, index)).join("");
-	element.innerHTML = commentsHTML;
+
+	const appHTML = getApp(commentsHTML);
+
+	element.innerHTML = appHTML;
+
 	addCommentLike();
 	answerComment();
+
+	document.getElementById("buttonAddComments")
+		.addEventListener("click", addNewComment);
+
+	document.getElementById("buttonDeleteLastComment")
+		.addEventListener("click", deleteLastComment);
 }
 
 const getListComments = (comment, index) => {
@@ -19,7 +34,7 @@ const getListComments = (comment, index) => {
 		<div class="comment-text">
 			${comment.commentText.replaceAll("QUOTE_BEGIN", "<div class='quote'>").replaceAll("QUOTE_END", "</div>")}
 		</div>
-	</div>
+	</div> 
 	<div class="comment-footer">
 		<div class="likes">
 			<span class="likes-counter">${comment.likesCounter}</span>
@@ -28,6 +43,23 @@ const getListComments = (comment, index) => {
 	</div>
 </li>`
 }
+
+const getApp = (commentsHTML) => {
+	return `<div id="loader-comments-feed">Пожалуйста подождите, загружаю комментарии...</div>
+	<ul class="comments" id="commentsList">
+	${commentsHTML}</ul>
+	<div id="loader-add-comment" class="loader-add-comment">Комментарий загружается...</div>
+	<div id="add-form" class="add-form">
+		<input type="text" class="add-form-name" placeholder="Введите ваше имя" id="nameInput" />
+		<textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
+			id="textInput"></textarea>
+		<div class="add-form-row">
+			<button class="add-form-button" id="buttonAddComments">Написать</button>
+		</div>
+	</div>
+	<button class="add-form-button" id="buttonDeleteLastComment">Удалить последний комментарий</button>`
+}
+
 
 const addCommentLike = () => {
 	const commentsLikes = document.querySelectorAll(".like-button");
@@ -40,7 +72,10 @@ const addCommentLike = () => {
 				comments[index].likesCounter = comments[index].likeInfo ? comments[index].likesCounter - 1 : comments[index].likesCounter + 1;
 				comments[index].likeInfo = !comments[index].likeInfo;
 				commentsLike.classList.remove("-loading-like");
-				renderComments(commentsList, getListComments);
+				renderApp(container, getListComments, getApp);
+				document.getElementById("loader-comments-feed")
+					.classList.add("hidden")
+				// уточнить
 			});
 		});
 	}
@@ -55,7 +90,7 @@ const answerComment = () => {
 				textInput.value = `QUOTE_BEGIN ${comments[index].userName}:
 ${comments[index].commentText} QUOTE_END`
 			}
-			renderComments(commentsList, getListComments);
+			fetchAndLoadingComments();
 		});
 	}
 }
@@ -80,4 +115,4 @@ ${comments[index].commentText} QUOTE_END`
 // 	}
 // }
 
-export { renderComments, getListComments, addCommentLike }
+export { renderApp, getApp, getListComments, addCommentLike }

@@ -1,16 +1,9 @@
-import {
-	loaderAddComment, addForm, nameInput,
-	textInput, buttonDeleteLastComment
-} from "./main.js";
 import { fetchAndAddComment } from "./api.js";
-import { renderComments, getListComments } from "./renderComments.js";
+import { renderApp, getListComments, getApp } from "./renderComments.js";
 
 const addNewComment = () => {
-
-	loaderAddComment.classList.add("block");
-	addForm.classList.add("hidden");
-
-	// Код для фиксации текущих даты и времени к каждому новому комментарию
+	const nameInput = document.getElementById("nameInput");
+	let textInput = document.getElementById("textInput");
 	let myDate = new Date().toLocaleString();
 
 	// Сценарий пустых полей ввода
@@ -27,44 +20,24 @@ const addNewComment = () => {
 		textInput.classList.remove("empty-place");
 	}
 
+	document.getElementById("loader-add-comment")
+		.classList.add("block");
+	document.getElementById("add-form")
+		.classList.add("hidden");
+
 	fetchAndAddComment();
-	renderComments(commentsList, getListComments);
+
+	document.getElementById("loader-comments-feed")
+		.classList.add("hidden")
 
 	nameInput.value = "";
 	textInput.value = "";
 }
 
-
-// Функционал закрытия кнопки при пустых полях ввода
-// buttonAddComments.disabled = "true";
-
-// const validateForm = () => {
-// 	if (nameInput.value.trim() === "") {
-// 		buttonAddComments.disabled = true;
-// 		return;
-// 	}
-// 	if (textInput.value.trim() === "") {
-// 		buttonAddComments.disabled = true;
-// 		return;
-// 	}
-// 	buttonAddComments.disabled = false;
-// }
-
-// nameInput.addEventListener("input", validateForm);
-// textInput.addEventListener("input", validateForm);
-
-
-// Добавление комментария при нажатии на Enter
-// document.addEventListener("keyup", e => {
-// 	if (e.key === "Enter") {
-// 		addNewComment();
-// 	}
-// });
-
 // Удаление крайнего комментария
-
 const deleteLastComment = () => {
 	commentsList.lastChild.remove();
+	// уточнить как работает
 }
 
 

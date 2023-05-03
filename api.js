@@ -1,5 +1,5 @@
-import { commentsLoadingText, addForm, loaderAddComment } from "./main.js";
-import { renderComments, getListComments } from "./renderComments.js";
+import { renderApp, getListComments, getApp } from "./renderComments.js";
+
 let comments = [];
 
 const fetchAndLoadingComments = () => {
@@ -20,14 +20,22 @@ const fetchAndLoadingComments = () => {
 				};
 			});
 			comments = appComments;
-			commentsLoadingText.classList.add("hidden")
-			renderComments(commentsList, getListComments);
+			renderApp(container, getListComments, getApp);
+			document.getElementById("loader-comments-feed")
+				.classList.add("hidden")
+			// уточнить
 		});
 }
 
 const fetchAndAddComment = () => {
+
+	const loaderAddComment = document.getElementById("loader-add-comment")
+	const addForm = document.getElementById("add-form");
+	const nameInput = document.getElementById("nameInput");
+	let textInput = document.getElementById("textInput");
+
 	const addStyleAddFormAndSaveInputValue = () => {
-		loaderAddComment.classList.remove("block")
+		loaderAddComment.classList.remove("block");
 		loaderAddComment.classList.add("hidden");
 		addForm.classList.remove("hidden");
 		addForm.classList.add("block");
@@ -86,4 +94,4 @@ const fetchAndAddComment = () => {
 		})
 }
 
-export { fetchAndLoadingComments, fetchAndAddComment, comments }
+export { comments, fetchAndLoadingComments, fetchAndAddComment }

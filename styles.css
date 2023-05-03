@@ -196,10 +196,31 @@ body {
 
  .name-input-return {
 	width: 344px;
+	height: 40px;
 	padding: 11px 22px;
  }
 
  .text-input-return {
 	width: 500px;
 	padding: 22px;
+ }
+
+ .form-registration__title{
+	font-size: 24px;
+	font-weight: 600;
+	margin-bottom: 20px;
+ }
+
+ .form-registration__input{
+	font-size: 16px;
+	font-family: Helvetica;
+	border-radius: 8px;
+	border: none;
+	white-space: pre;
+	padding: 11px 22px;
+	margin-bottom: 10px;
+ }
+
+ .form-registration__button{
+	margin-top: 15px;
  }
