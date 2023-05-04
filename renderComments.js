@@ -66,7 +66,6 @@ const renderComments = (element, getLoaderComments, getListComments) => {
 				});
 			})
 	}
-
 }
 
 const getListComments = (comment, index) => {
@@ -108,9 +107,6 @@ const getApp = (commentsHTML) => {
 	<button class="add-form-button" id="buttonDeleteLastComment">Удалить последний комментарий</button>
 	<button class="add-form-button" id="buttonLogout">Выйти из учётной записи</button>`
 }
-
-
-
 
 const addCommentLike = () => {
 	const commentsLikes = document.querySelectorAll(".like-button");

@@ -43,25 +43,6 @@ const fetchAndLoadingComments = () => {
 
 const fetchAndAddComment = ({ text, token }) => {
 
-		const loaderAddComment = document.getElementById("loader-add-comment")
-		const addForm = document.getElementById("add-form");
-		const nameInput = document.getElementById("nameInput");
-		let textInput = document.getElementById("textInput");
-
-		const addStyleAddFormAndSaveInputValue = () => {
-			loaderAddComment.classList.remove("block");
-			loaderAddComment.classList.add("hidden");
-			addForm.classList.remove("hidden");
-			addForm.classList.add("block");
-			nameInput.classList.add("name-input-return");
-			textInput.classList.add("text-input-return");
-
-			nameInput.value = valueNameInput;
-			textInput.value = valueTextInput;
-		}
-
-		const valueNameInput = nameInput.value;
-		const valueTextInput = textInput.value;
 
 		return fetch("https://webdev-hw-api.vercel.app/api/v2/nikita-zavadskiy/comments", {
 			method: "POST",
@@ -83,6 +64,28 @@ const fetchAndAddComment = ({ text, token }) => {
 				return fetchAndLoadingComments();
 			})
 			.then((response) => {
+
+				const loaderAddComment = document.getElementById("loader-add-comment")
+				const addForm = document.getElementById("add-form");
+				const nameInput = document.getElementById("nameInput");
+				let textInput = document.getElementById("textInput");
+		
+				const addStyleAddFormAndSaveInputValue = () => {
+					loaderAddComment.classList.remove("block");
+					loaderAddComment.classList.add("hidden");
+					addForm.classList.remove("hidden");
+					addForm.classList.add("block");
+					nameInput.classList.add("name-input-return");
+					textInput.classList.add("text-input-return");
+		
+					nameInput.value = valueNameInput;
+					textInput.value = valueTextInput;
+				}
+		
+				const valueNameInput = nameInput.value;
+				const valueTextInput = textInput.value;
+		
+
 				addStyleAddFormAndSaveInputValue();
 				nameInput.value = "";
 				textInput.value = "";
