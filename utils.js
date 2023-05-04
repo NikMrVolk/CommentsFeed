@@ -31,3 +31,24 @@ export function delay(interval = 300) {
 // 		addNewComment();
 // 	}
 // });
+
+// из рендера приложения
+// const editComments = () => {
+// 	const editCommentsButtons = document.querySelectorAll(".edit-button");
+// 	for (const editCommentsButton of editCommentsButtons) {
+// 		editCommentsButton.addEventListener("click", (event) => {
+// 			event.stopPropagation();
+// 			const index = editCommentsButton.dataset.index;
+// 			if (comments[index].isEdit === true) {
+// 				const textInputEditComment = document.getElementById("textInputEditComment");
+// 				comments[index].commentText = textInputEditComment.value;
+// 				comments[index].isEdit = false;
+// 			} else {
+// 				comments[index].commentText = `<textarea type="textarea" class="form-edit-comment" rows="4"
+// 			id="textInputEditComment">${comments[index].commentText}</textarea>`
+// 				comments[index].isEdit = true;
+// 			}
+// 			renderComments();
+// 		});
+// 	}
+// }

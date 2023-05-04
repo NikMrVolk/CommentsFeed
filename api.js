@@ -3,31 +3,41 @@ import { renderApp, getListComments, getApp } from "./renderComments.js";
 let comments = [];
 
 const fetchAndLoadingComments = () => {
-	return fetch("https://webdev-hw-api.vercel.app/api/v1/nikita-zavadskiy/comments", {
+	return fetch("https://webdev-hw-api.vercel.app/api/v2/nikita-zavadskiy/comments", {
 		method: "GET",
 	}).then((response) => {
 		return response.json()
 	})
 		.then((responseData) => {
+			responseData.comments.forEach(element => {
+				let keys = Object.keys(localStorage);
+				for (let key of keys) {
+					if (element.id === key) {
+						element.isLiked = localStorage.getItem(key)
+					}
+				}
+			});
+
 			const appComments = responseData.comments.map((comment) => {
 				return {
 					userName: comment.author.name,
 					commentDate: new Date(comment.date).toLocaleString(),
 					commentText: comment.text,
 					likesCounter: comment.likes,
-					likeInfo: false,
-					isAnswer: false,
+					isLiked: comment.isLiked,
+					isAnswer: comment.isLiked,
+					id: comment.id,
 				};
 			});
+
+
+
 			comments = appComments;
 			renderApp(container, getListComments, getApp);
-			document.getElementById("loader-comments-feed")
-				.classList.add("hidden")
-			// уточнить
 		});
 }
 
-const fetchAndAddComment = () => {
+const fetchAndAddComment = ({ text, token }) => {
 
 	const loaderAddComment = document.getElementById("loader-add-comment")
 	const addForm = document.getElementById("add-form");
@@ -49,13 +59,15 @@ const fetchAndAddComment = () => {
 	const valueNameInput = nameInput.value;
 	const valueTextInput = textInput.value;
 
-	return fetch("https://webdev-hw-api.vercel.app/api/v1/nikita-zavadskiy/comments", {
+	return fetch("https://webdev-hw-api.vercel.app/api/v2/nikita-zavadskiy/comments", {
 		method: "POST",
 		body: JSON.stringify({
-			text: textInput.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
-			name: nameInput.value,
-			forceError: true,
-		})
+			text,
+			// forceError: true,
+		}),
+		headers: {
+			Authorization: token,
+		},
 	})
 		.then((response) => {
 			if (response.status === 400) {
@@ -94,4 +106,54 @@ const fetchAndAddComment = () => {
 		})
 }
 
-export { comments, fetchAndLoadingComments, fetchAndAddComment }
+const fetchAndLogin = ({ login, password }) => {
+	return fetch("https://webdev-hw-api.vercel.app/api/user/login", {
+		method: "POST",
+		body: JSON.stringify({
+			login,
+			password,
+		})
+	})
+		.then((response) => {
+			if (response.status === 400) {
+				throw new Error("Entered not true login or password");
+			}
+			return response.json();
+		})
+}
+
+const fetchAndAuthorization = ({ name, login, password }) => {
+	return fetch("https://webdev-hw-api.vercel.app/api/user", {
+		method: "POST",
+		body: JSON.stringify({
+			name,
+			login,
+			password,
+		})
+	})
+		.then((response) => {
+			if (response.status === 400) {
+				throw new Error("User with such data already exists");
+			}
+			return response.json();
+		})
+}
+
+const fetchAndAddLike = ({ id, token }) => {
+	return fetch(`https://webdev-hw-api.vercel.app/api/v2/nikita-zavadskiy
+			/comments/${id}/toggle-like`, {
+		method: "POST",
+		headers: {
+			Authorization: token,
+		},
+	})
+		.then((response) => {
+			return response.json();
+		})
+}
+
+export {
+	comments, fetchAndLoadingComments,
+	fetchAndAddComment, fetchAndLogin,
+	fetchAndAuthorization, fetchAndAddLike
+}

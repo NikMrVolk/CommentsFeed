@@ -1,5 +1,5 @@
 import { fetchAndAddComment } from "./api.js";
-import { renderApp, getListComments, getApp } from "./renderComments.js";
+import { renderApp, getListComments, getApp, token } from "./renderComments.js";
 
 const addNewComment = () => {
 	const nameInput = document.getElementById("nameInput");
@@ -25,12 +25,15 @@ const addNewComment = () => {
 	document.getElementById("add-form")
 		.classList.add("hidden");
 
-	fetchAndAddComment();
+	fetchAndAddComment({
+		text: textInput.value,
+		token,
+	})
 
-	document.getElementById("loader-comments-feed")
-		.classList.add("hidden")
+	// document.getElementById("loader-comments-feed")
+	// 	.classList.add("hidden")
 
-	nameInput.value = "";
+	// nameInput.value = "";
 	textInput.value = "";
 }
 

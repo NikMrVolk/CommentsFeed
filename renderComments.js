@@ -1,27 +1,64 @@
 import { container } from "./main.js";
-import { comments } from "./api.js";
+import { comments, fetchAndLoadingComments, fetchAndLogin, fetchAndAddLike } from "./api.js";
 import { delay } from "./utils.js";
 import { addNewComment, deleteLastComment } from "./addAndDeleteComments.js";
+import { renderLoginComponent, yourName } from "./components/login-component.js";
 
-
+let token = null;
+token = localStorage.getItem("myUserToken");
+let myFavorit = null;
 
 const renderApp = (element, getListComments, getApp) => {
-
+	if (!token) {
+		renderComments(container, getLoaderComments, getListComments)
+		return;
+	}
 	const commentsHTML = comments
 		.map((comment, index) => getListComments(comment, index)).join("");
-
 	const appHTML = getApp(commentsHTML);
-
 	element.innerHTML = appHTML;
 
+	const nameInput = document.getElementById("nameInput");
+	if (localStorage.getItem("yourName")) {
+		nameInput.value = localStorage.getItem("yourName");
+	} else {
+		nameInput.value = yourName;
+	}
+	nameInput.disabled = true;
+
+
 	addCommentLike();
-	answerComment();
+	// answerComment();
 
 	document.getElementById("buttonAddComments")
 		.addEventListener("click", addNewComment);
-
 	document.getElementById("buttonDeleteLastComment")
 		.addEventListener("click", deleteLastComment);
+}
+
+const renderComments = (element, getLoaderComments, getListComments) => {
+	element.innerHTML = getLoaderComments();
+	let commentsHTML = comments
+		.map((comment, index) => getListComments(comment, index)).join("");
+
+	if (commentsHTML) {
+		commentsHTML = commentsHTML + `
+		<button id="transitionToAuthorization" class="add-form-button" >Чтобы добавить комментарий, 
+		авторизуйтесь</button>`
+		element.innerHTML = commentsHTML;
+
+		document.getElementById("transitionToAuthorization")
+			.addEventListener("click", () => {
+				renderLoginComponent({
+					element,
+					setToken: (newToken) => {
+						token = newToken;
+					},
+					fetchAndLoadingComments,
+				});
+			})
+	}
+
 }
 
 const getListComments = (comment, index) => {
@@ -38,15 +75,18 @@ const getListComments = (comment, index) => {
 	<div class="comment-footer">
 		<div class="likes">
 			<span class="likes-counter">${comment.likesCounter}</span>
-			<button class="like-button ${comment.likeInfo ? "-active-like" : ""}" data-index="${index}" data-likes="${comment.likesCounter}"></button>
+			<button class="like-button ${comment.isLiked ? "-active-like" : ""}" data-index="${index}" data-likes="${comment.likesCounter}"></button>
 		</div>
 	</div>
 </li>`
 }
 
+const getLoaderComments = () => {
+	return `<div id="loader-comments-feed">Пожалуйста подождите, загружаю комментарии...</div>`
+}
+
 const getApp = (commentsHTML) => {
-	return `<div id="loader-comments-feed">Пожалуйста подождите, загружаю комментарии...</div>
-	<ul class="comments" id="commentsList">
+	return `<ul class="comments" id="commentsList">
 	${commentsHTML}</ul>
 	<div id="loader-add-comment" class="loader-add-comment">Комментарий загружается...</div>
 	<div id="add-form" class="add-form">
@@ -61,6 +101,8 @@ const getApp = (commentsHTML) => {
 }
 
 
+
+
 const addCommentLike = () => {
 	const commentsLikes = document.querySelectorAll(".like-button");
 	for (const commentsLike of commentsLikes) {
@@ -68,14 +110,18 @@ const addCommentLike = () => {
 			event.stopPropagation();
 			const index = commentsLike.dataset.index;
 			commentsLike.classList.add("-loading-like");
+			const id = comments[index].id;
+
+			fetchAndAddLike({ id, token })
+				.then((response) => {
+
+					localStorage.setItem(`${id}`, `${response.result.isLiked}`);
+					console.log(localStorage);
+				})
+
 			delay(2000).then(() => {
-				comments[index].likesCounter = comments[index].likeInfo ? comments[index].likesCounter - 1 : comments[index].likesCounter + 1;
-				comments[index].likeInfo = !comments[index].likeInfo;
 				commentsLike.classList.remove("-loading-like");
-				renderApp(container, getListComments, getApp);
-				document.getElementById("loader-comments-feed")
-					.classList.add("hidden")
-				// уточнить
+				fetchAndLoadingComments();
 			});
 		});
 	}
@@ -95,24 +141,5 @@ ${comments[index].commentText} QUOTE_END`
 	}
 }
 
-// const editComments = () => {
-// 	const editCommentsButtons = document.querySelectorAll(".edit-button");
-// 	for (const editCommentsButton of editCommentsButtons) {
-// 		editCommentsButton.addEventListener("click", (event) => {
-// 			event.stopPropagation();
-// 			const index = editCommentsButton.dataset.index;
-// 			if (comments[index].isEdit === true) {
-// 				const textInputEditComment = document.getElementById("textInputEditComment");
-// 				comments[index].commentText = textInputEditComment.value;
-// 				comments[index].isEdit = false;
-// 			} else {
-// 				comments[index].commentText = `<textarea type="textarea" class="form-edit-comment" rows="4"
-// 			id="textInputEditComment">${comments[index].commentText}</textarea>`
-// 				comments[index].isEdit = true;
-// 			}
-// 			renderComments();
-// 		});
-// 	}
-// }
 
-export { renderApp, getApp, getListComments, addCommentLike }
+export { renderApp, getApp, getListComments, addCommentLike, token }
