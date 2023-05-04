@@ -43,5 +43,4 @@ const deleteLastComment = () => {
 	// уточнить как работает
 }
 
-
 export { addNewComment, deleteLastComment }

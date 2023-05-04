@@ -6,7 +6,7 @@ import { renderLoginComponent, yourName } from "./components/login-component.js"
 
 let token = null;
 token = localStorage.getItem("myUserToken");
-let myFavorit = null;
+
 
 const renderApp = (element, getListComments, getApp) => {
 	if (!token) {
@@ -34,6 +34,14 @@ const renderApp = (element, getListComments, getApp) => {
 		.addEventListener("click", addNewComment);
 	document.getElementById("buttonDeleteLastComment")
 		.addEventListener("click", deleteLastComment);
+
+		document.getElementById("buttonLogout")
+		.addEventListener("click", () => {
+			localStorage.removeItem("myUserToken");
+			localStorage.removeItem("yourName");
+			token = null;
+			renderApp(container, getListComments, getApp);
+		});
 }
 
 const renderComments = (element, getLoaderComments, getListComments) => {
@@ -97,7 +105,8 @@ const getApp = (commentsHTML) => {
 			<button class="add-form-button" id="buttonAddComments">Написать</button>
 		</div>
 	</div>
-	<button class="add-form-button" id="buttonDeleteLastComment">Удалить последний комментарий</button>`
+	<button class="add-form-button" id="buttonDeleteLastComment">Удалить последний комментарий</button>
+	<button class="add-form-button" id="buttonLogout">Выйти из учётной записи</button>`
 }
 
 
@@ -114,9 +123,8 @@ const addCommentLike = () => {
 
 			fetchAndAddLike({ id, token })
 				.then((response) => {
-
 					localStorage.setItem(`${id}`, `${response.result.isLiked}`);
-					console.log(localStorage);
+
 				})
 
 			delay(2000).then(() => {
