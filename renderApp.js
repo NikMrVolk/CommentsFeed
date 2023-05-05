@@ -1,4 +1,4 @@
-import { container } from "./main.js";
+import { container } from "./index.js";
 import { comments, fetchAndLoadingComments, fetchAndAddLike } from "./api/workWithComments-api.js";
 import { fetchAndLogin } from "./api/authorization-api.js";
 import { delay } from "./assistants/utils.js";

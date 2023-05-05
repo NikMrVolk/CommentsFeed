@@ -4,7 +4,6 @@ import { getListComments, getApp } from "./assistants/gets.js";
 import { addNewComment } from "./functional/addComments.js";
 import { deleteLastComment } from "./functional/deleteComments.js";
 
-
 export const container = document.getElementById("container");
 
 fetchAndLoadingComments();

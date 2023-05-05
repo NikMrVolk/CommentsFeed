@@ -1,6 +1,7 @@
 import { renderApp } from "../renderApp.js";
-import { container } from "../main.js";
+import { container } from "../index.js";
 import { getListComments, getApp } from "../assistants/gets.js"
+import { format } from "date-fns";
 
 export let comments = [];
 
@@ -29,7 +30,7 @@ export const fetchAndLoadingComments = () => {
 			const appComments = commentData.map((comment) => {
 				return {
 					userName: comment.author.name,
-					commentDate: new Date(comment.date).toLocaleString(),
+					commentDate: format(new Date(comment.date), 'yyyy-MM-dd hh.mm.ss'),
 					commentText: comment.text,
 					likesCounter: comment.likes,
 					isLiked: comment.isLiked,
