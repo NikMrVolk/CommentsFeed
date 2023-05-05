@@ -2,13 +2,15 @@ import { container } from "./main.js";
 import { comments, fetchAndLoadingComments, fetchAndAddLike } from "./api/workWithComments-api.js";
 import { fetchAndLogin } from "./api/authorization-api.js";
 import { delay } from "./assistants/utils.js";
-import { addNewComment, deleteLastComment } from "./addAndDeleteComments.js";
 import { renderLoginComponent, yourName } from "./components/login-component.js";
 import { token, renderComments, switchUser } from "./components/comments-component.js";
 import { getListComments, getLoaderComments, getApp } from "./assistants/gets.js"
+import { addNewComment } from "./functional/addComments.js";
+import { deleteLastComment } from "./functional/deleteComments.js";
+import { addCommentLike } from "./functional/addLike.js";
+import { answerComment } from "./functional/answerComment.js";
 
-
-const renderApp = (element, getListComments, getApp) => {
+export const renderApp = (element, getListComments, getApp) => {
 	if (!token) {
 		renderComments(container, getLoaderComments, getListComments)
 		return;
@@ -39,44 +41,6 @@ const renderApp = (element, getListComments, getApp) => {
 		.addEventListener("click", deleteLastComment);
 	document.getElementById("buttonLogout")
 		.addEventListener("click", switchUser);
-
-}
-const addCommentLike = () => {
-	const commentsLikes = document.querySelectorAll(".like-button");
-	for (const commentsLike of commentsLikes) {
-		commentsLike.addEventListener("click", (event) => {
-			event.stopPropagation();
-			const index = commentsLike.dataset.index;
-			commentsLike.classList.add("-loading-like");
-			const id = comments[index].id;
-
-			fetchAndAddLike({ id, token })
-				.then((response) => {
-					localStorage.setItem(`${id}`, `${response.result.isLiked}`);
-
-				})
-
-			delay(2000).then(() => {
-				commentsLike.classList.remove("-loading-like");
-				fetchAndLoadingComments();
-			});
-		});
-	}
 }
 
-const answerComment = () => {
-	const commentsBody = document.querySelectorAll(".comment");
-	for (const commentBody of commentsBody) {
-		commentBody.addEventListener("click", () => {
-			const index = commentBody.dataset.index;
-			if (comments[index].isAnswer === false) {
-				textInput.value = `QUOTE_BEGIN ${comments[index].userName}:
-${comments[index].commentText} QUOTE_END`
-			}
-			fetchAndLoadingComments();
-		});
-	}
-}
-
-
-export { renderApp, getApp, getListComments, addCommentLike, token }
+export { token }

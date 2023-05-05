@@ -1,9 +1,9 @@
-import { fetchAndAddComment } from "./api/workWithComments-api.js";
-import { renderApp } from "./renderApp.js";
-import { getListComments, getLoaderComments, getApp } from "./assistants/gets.js"
-import { token } from "./renderApp.js";
+import { fetchAndAddComment } from "../api/workWithComments-api.js";
+import { renderApp } from "../renderApp.js";
+import { getListComments, getLoaderComments, getApp } from "../assistants/gets.js"
+import { token } from "../renderApp.js";
 
-const addNewComment = () => {
+export const addNewComment = () => {
 	const nameInput = document.getElementById("nameInput");
 	let textInput = document.getElementById("textInput");
 	let myDate = new Date().toLocaleString();
@@ -32,17 +32,5 @@ const addNewComment = () => {
 		token,
 	})
 
-	// document.getElementById("loader-comments-feed")
-	// 	.classList.add("hidden")
-
-	// nameInput.value = "";
 	textInput.value = "";
 }
-
-// Удаление крайнего комментария
-const deleteLastComment = () => {
-	commentsList.lastChild.remove();
-	// уточнить как работает
-}
-
-export { addNewComment, deleteLastComment }
