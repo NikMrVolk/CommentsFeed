@@ -1,5 +1,6 @@
-import { renderApp, getListComments, getApp } from "../renderApp.js";
+import { renderApp } from "../renderApp.js";
 import { container } from "../main.js";
+import { getListComments, getApp } from "../assistants/gets.js"
 
 export let comments = [];
 

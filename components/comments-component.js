@@ -1,7 +1,8 @@
 import { renderLoginComponent } from "./login-component.js";
 import { comments, fetchAndLoadingComments } from "../api/workWithComments-api.js";
-import { renderApp, getListComments, getApp } from "../renderApp.js";
+import { renderApp } from "../renderApp.js";
 import { container } from "../main.js";
+import { getListComments, getLoaderComments, getApp } from "../assistants/gets.js"
 
 export let token = null;
 token = localStorage.getItem("myUserToken");
