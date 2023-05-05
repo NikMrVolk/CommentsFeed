@@ -1,15 +1,18 @@
 import { container } from "./main.js";
-import { comments, fetchAndLoadingComments, fetchAndLogin, fetchAndAddLike } from "./api.js";
+import { comments, fetchAndLoadingComments, fetchAndAddLike } from "./api/workWithComments-api.js";
+import { fetchAndLogin } from "./api/authorization-api.js";
 import { delay } from "./utils.js";
 import { addNewComment, deleteLastComment } from "./addAndDeleteComments.js";
 import { renderLoginComponent, yourName } from "./components/login-component.js";
-
-let token = null;
-token = localStorage.getItem("myUserToken");
+import { token, renderComments, switchUser } from "./components/comments-component.js";
 
 
 const renderApp = (element, getListComments, getApp) => {
 	if (!token) {
+		renderComments(container, getLoaderComments, getListComments)
+		return;
+	}
+		if (!localStorage.getItem("myUserToken")) {
 		renderComments(container, getLoaderComments, getListComments)
 		return;
 	}
@@ -35,37 +38,11 @@ const renderApp = (element, getListComments, getApp) => {
 	document.getElementById("buttonDeleteLastComment")
 		.addEventListener("click", deleteLastComment);
 
-		document.getElementById("buttonLogout")
+	document.getElementById("buttonLogout")
 		.addEventListener("click", () => {
-			localStorage.removeItem("myUserToken");
-			localStorage.removeItem("yourName");
-			token = null;
-			renderApp(container, getListComments, getApp);
+			switchUser(token);
 		});
-}
 
-const renderComments = (element, getLoaderComments, getListComments) => {
-	element.innerHTML = getLoaderComments();
-	let commentsHTML = comments
-		.map((comment, index) => getListComments(comment, index)).join("");
-
-	if (commentsHTML) {
-		commentsHTML = commentsHTML + `
-		<button id="transitionToAuthorization" class="add-form-button" >Чтобы добавить комментарий, 
-		авторизуйтесь</button>`
-		element.innerHTML = commentsHTML;
-
-		document.getElementById("transitionToAuthorization")
-			.addEventListener("click", () => {
-				renderLoginComponent({
-					element,
-					setToken: (newToken) => {
-						token = newToken;
-					},
-					fetchAndLoadingComments,
-				});
-			})
-	}
 }
 
 const getListComments = (comment, index) => {

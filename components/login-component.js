@@ -1,4 +1,4 @@
-import { fetchAndLogin, fetchAndAuthorization } from "../api.js";
+import { fetchAndLogin, fetchAndAuthorization } from "../api/authorization-api.js";
 
 export let yourName = null;
 let user = null;

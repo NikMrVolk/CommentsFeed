@@ -1,5 +1,5 @@
-import { fetchAndAddComment } from "./api.js";
-import { renderApp, getListComments, getApp, token } from "./renderComments.js";
+import { fetchAndAddComment } from "./api/workWithComments-api.js";
+import { renderApp, getListComments, getApp, token } from "./renderApp.js";
 
 const addNewComment = () => {
 	const nameInput = document.getElementById("nameInput");
